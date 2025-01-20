@@ -16,6 +16,7 @@ use App\Repository\UserRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -35,7 +36,7 @@ use Symfony\Component\Validator\Constraints as Assert;
     denormalizationContext: ['groups' => ['user:write']],
     paginationItemsPerPage: 2
 )]
-#[UniqueEntity('email', message: "Bu {{ value }} email avval ro'yxatdan o'tgan")]
+//#[UniqueEntity('email', message: "Bu {{ value }} email avval ro'yxatdan o'tgan")]
 #[ApiFilter(SearchFilter::class, properties: [
     'id' => 'exact',
     'email' => 'partial',
@@ -43,7 +44,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 ])]
 #[ApiFilter(OrderFilter::class, properties: ['id'])]
 #[ApiFilter(DateFilter::class, properties: ['createdAt'])]
-class User
+class User implements PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -85,7 +86,7 @@ class User
     private array $roles = ["ROLE_USER"];
 
     #[ORM\Column]
-    #[Groups(['user:read', 'user:write'])]
+    #[Groups(['user:read'])]
     private ?\DateTimeImmutable $createdAt = null;
 
     public function getId(): ?int
